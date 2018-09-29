@@ -405,6 +405,13 @@
 			};
 		})(root.accounting);
 
+		//My approach to .noConflict
+		let oldAccounting = root.accounting;
+		lib.noConflict = function() {
+			root.accounting = oldAccounting;
+			return lib;
+		};
+
 		// Declare `fx` on the root (global/window) object:
 		root['accounting'] = lib;
 	}
