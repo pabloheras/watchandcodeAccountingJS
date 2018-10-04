@@ -58,7 +58,7 @@
 	}
 
 	/**
-	 * Tests whether supplied parameter is a string
+	 * Tests whether supplied parameter is an array
 	 * from underscore.js, delegates to ECMA5's native Array.isArray
 	 */
 	function isArray(obj) {
@@ -69,7 +69,7 @@
 	 * Tests whether supplied parameter is a true object
 	 */
 	function isObject(obj) {
-		return obj && toString.call(obj) === '[object Object]';
+		return !!(obj && toString.call(obj) === '[object Object]');
 	}
 
 	/**
@@ -85,7 +85,9 @@
 		for (key in defs) {
 			if (defs.hasOwnProperty(key)) {
 				// Replace values with defaults only if undefined (allow empty/zero values):
-				if (object[key] == null) object[key] = defs[key];
+				if (object[key] === undefined) {
+					object[key] = defs[key];	
+				} 
 			}
 		}
 		return object;
@@ -124,13 +126,24 @@
 	/**
 	 * Parses a format string or object and returns format obj for use in rendering
 	 *
-	 * `format` is either a string with the default (positive) format, or object
-	 * containing `pos` (required), `neg` and `zero` values (or a function returning
-	 * either a string or object)
+	 * Parameters:
+	 * string		has "default positive format", must contain "%v"	
+	 * object		has 'pos' (required, must contain "%v"), 'neg', 'zero' properties
+	 * function		returns a string or object like above
 	 *
-	 * Either string or format.pos must contain "%v" (value) to be valid
+	 * Returns:
+	 * object		has 'pos' (required, must contain "%v"), 'neg', 'zero' properties
 	 */
+	// Scenarios:
+	// A: Valid string		==> convert string to a format object
+	// B: Invalid string	==> use default and turn it to an obj if it's not already
+	// C: Valid object		==> leave the object alone
+	// D: Invalid object	==> use default and turn it to an obj if it's not already
+	// E: Function			==> depends on what the function returns
+	// F: Nothing			==> use default and turn it to an obj if it's not already
+	
 	function checkCurrencyFormat(format) {
+		// Default value will be "%s%v" format:
 		var defaults = lib.settings.currency.format;
 
 		// Allow function as format parameter (should return string or object):
@@ -159,6 +172,7 @@
 		}
 		// Otherwise, assume format was fine:
 		return format;
+
 	}
 
 
@@ -406,11 +420,11 @@
 		})(root.accounting);
 
 		//My approach to .noConflict
-		let oldAccounting = root.accounting;
-		lib.noConflict = function() {
-			root.accounting = oldAccounting;
-			return lib;
-		};
+		// let oldAccounting = root.accounting;
+		// lib.noConflict = function() {
+		// 	root.accounting = oldAccounting;
+		// 	return lib;
+		// };
 
 		// Declare `fx` on the root (global/window) object:
 		root['accounting'] = lib;
