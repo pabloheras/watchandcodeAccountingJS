@@ -141,7 +141,7 @@
 	// D: Invalid object	==> use default and turn it to an obj if it's not already
 	// E: Function			==> depends on what the function returns
 	// F: Nothing			==> use default and turn it to an obj if it's not already
-	
+
 	function checkCurrencyFormat(format) {
 		// Default value will be "%s%v" format:
 		var defaults = lib.settings.currency.format;
@@ -227,7 +227,9 @@
 	 * Fixes binary rounding issues (eg. (0.615).toFixed(2) === "0.61") that present
 	 * problems for accounting- and finance-related software.
 	 */
-	var toFixed = lib.toFixed = function(value, precision) {
+	
+	// accounting.js original toFixed function
+	 var toFixed = lib.toFixed = function(value, precision) {
 		precision = checkPrecision(precision, lib.settings.number.precision);
 		var power = Math.pow(10, precision);
 
@@ -235,6 +237,15 @@
 		return (Math.round(lib.unformat(value) * power) / power).toFixed(precision);
 	};
 
+	var toFixed = lib.toFixed = function(value, precision) { 
+		precision = checkPrecision(precision, lib.settings.number.precision);
+		// Rounding numbers with the scientific format avoids any binary rounding issues
+		let exponentialForm = Number(value + 'e' + precision);
+		let rounded = Math.round(exponentialForm);
+		let finalResult = Number(rounded + 'e-' + precision);
+
+		return finalResult.toFixed(precision);
+	};
 
 	/**
 	 * Format a number, with comma-separated thousands and custom precision/decimal places
