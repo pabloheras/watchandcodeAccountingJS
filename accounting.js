@@ -229,14 +229,15 @@
 	 */
 	
 	// accounting.js original toFixed function
-	 var toFixed = lib.toFixed = function(value, precision) {
-		precision = checkPrecision(precision, lib.settings.number.precision);
-		var power = Math.pow(10, precision);
+	//  var toFixed = lib.toFixed = function(value, precision) {
+	// 	precision = checkPrecision(precision, lib.settings.number.precision);
+	// 	var power = Math.pow(10, precision);
 
-		// Multiply up by precision, round accurately, then divide and use native toFixed():
-		return (Math.round(lib.unformat(value) * power) / power).toFixed(precision);
-	};
+	// 	// Multiply up by precision, round accurately, then divide and use native toFixed():
+	// 	return (Math.round(lib.unformat(value) * power) / power).toFixed(precision);
+	// };
 
+	// Improved toFixed function
 	var toFixed = lib.toFixed = function(value, precision) { 
 		precision = checkPrecision(precision, lib.settings.number.precision);
 		// Rounding numbers with the scientific format avoids any binary rounding issues
