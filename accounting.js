@@ -228,7 +228,7 @@
 	 * problems for accounting- and finance-related software.
 	 */
 	
-	// accounting.js original toFixed function
+	// accounting.js original toFixed method
 	//  var toFixed = lib.toFixed = function(value, precision) {
 	// 	precision = checkPrecision(precision, lib.settings.number.precision);
 	// 	var power = Math.pow(10, precision);
@@ -237,7 +237,7 @@
 	// 	return (Math.round(lib.unformat(value) * power) / power).toFixed(precision);
 	// };
 
-	// Improved toFixed function
+	// Improved toFixed method
 	var toFixed = lib.toFixed = function(value, precision) { 
 		precision = checkPrecision(precision, lib.settings.number.precision);
 		// Rounding numbers with the scientific format avoids any binary rounding issues
@@ -301,7 +301,7 @@
 	 * To do: tidy up the parameters
 	 */
 	var formatMoney = lib.formatMoney = function(number, symbol, precision, thousand, decimal, format) {
-		// Resursively format arrays:
+		// Recursively format arrays:
 		if (isArray(number)) {
 			return map(number, function(val){
 				return formatMoney(val, symbol, precision, thousand, decimal, format);
@@ -321,16 +321,38 @@
 					format : format
 				}),
 				lib.settings.currency
-			),
+			);
 
 			// Check format (returns object with pos, neg and zero):
-			formats = checkCurrencyFormat(opts.format),
+		var formats = checkCurrencyFormat(opts.format);
 
 			// Choose which format to use for this value:
-			useFormat = number > 0 ? formats.pos : number < 0 ? formats.neg : formats.zero;
+			//useFormat = number > 0 ? formats.pos : number < 0 ? formats.neg : formats.zero;
+
+		// Modified from original code for clarity
+		var useFormat;
+
+		if (number > 0) {
+			useFormat = formats.pos;
+		} else if (numbers < 0){
+			useFormat = formats.neg;
+		} else {
+			useFormat = formats.zero;
+		}
+
 
 		// Return with currency symbol added:
-		return useFormat.replace('%s', opts.symbol).replace('%v', formatNumber(Math.abs(number), checkPrecision(opts.precision), opts.thousand, opts.decimal));
+		//return useFormat.replace('%s', opts.symbol).replace('%v', formatNumber(Math.abs(number), checkPrecision(opts.precision), opts.thousand, opts.decimal));
+		
+		// Modified from original code for clarity
+		var formattedNumber = formatNumber(
+			Math.abs(number), checkPrecision(opts.precision), opts.thousand, opts.decimal);
+		
+		var finalResult = useFormat
+			.replace('%s', opts.symbol)
+			.replace('%v', formattedNumber);
+
+		return finalResult;
 	};
 
 
